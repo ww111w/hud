@@ -1,24 +1,24 @@
 var HUD = new Vue({
     el: "#hudElement",
     data: {
-        show: true, // Изменили на true, чтобы худ по дефолту оставался видимым
-        ammo: 0,
+        show: true, // ИСПРАВЛЕНО: Теперь худ НЕ пропадёт сам по себе после инициализации Vue
+        ammo: 100,  // Тестовое значение
         money: "117 000 000",
         mic: false,
-        time: "02:01",
-        date: "22.04.2021",
-        street: "Гора Чиллиад",
-        crossingRoad: "Шоссе Сенора",
-        playerId : 1000,
+        time: "12:00",
+        date: "01.01.2026",
+        street: "Миррор-Парк",
+        crossingRoad: "Бульвар Элгин",
+        playerId : 1, // Тестовый ID, чтобы не было пустоты
 		personId: 0,
-        online: 1000,
+        online: 500,  // Тестовый онлайн
         inVeh: false,
 		belt: false,
         engine: false,
         doors: false,
         light: false,
         ilight: -1,
-        speed: "150",
+        speed: "0",
         fuel: 100,
         maxfuel: 150,
         gear: 1,
@@ -30,7 +30,7 @@ var HUD = new Vue({
         rpmm: function(rpm) {
             this.rpm = rpm;
         },
-        setTime: (time, date) => {
+        setTime: function(time, date) { // Исправлено на обычную функцию для корректной работы 'this' во Vue
             this.time = time;
             this.date = date;
         }, 
@@ -43,7 +43,10 @@ var HUD = new Vue({
             return num > 675.295 ? 675.295 : num;
         },
     }
-})
+});
+
+// Экспортируем HUD в глобальное окно браузера, чтобы C# (клиент RageMP / FiveM) мог до него достучаться
+window.HUD = HUD;
 
 var lastW = 0;
 var lastR = 0;
@@ -54,29 +57,31 @@ function updatehud(width, ratio, safezone, offset=0) {
 
     if(width > 2100) {
         offset += 98;
-        document.querySelector(".mappings").style['bottom'] = '1px';
+        if(document.querySelector(".mappings")) document.querySelector(".mappings").style['bottom'] = '1px';
     }
 
     if(width < 1440) {
         offset -= 92;
         y2 = 404;
-        document.querySelector(".mappings").style.bottom = '13px';
-        document.querySelector(".mappings").style.transform = 'scale(0.75)';
+        if(document.querySelector(".mappings")) {
+            document.querySelector(".mappings").style.bottom = '13px';
+            document.querySelector(".mappings").style.transform = 'scale(0.75)';
+        }
     }
 
     if(width < 1320) {
         offset -= 38;
-        document.querySelector(".mappings").style.bottom = '13px';
-        document.querySelector(".mappings").style.transform = 'scale(0.75)';
+        if(document.querySelector(".mappings")) {
+            document.querySelector(".mappings").style.bottom = '13px';
+            document.querySelector(".mappings").style.transform = 'scale(0.75)';
+        }
     }
 
     const m = (y2 - y1) / (5/4 - 16/9);
     const b = y1 - (m * 16 / 9);
 
-    // Дополнительная проверка на существование элемента перед изменением стилей,
-    // чтобы предотвратить падение скрипта при перезагрузках
     let mappingsEl = document.querySelector(".mappings");
     if (mappingsEl) {
         mappingsEl.style.left = `${m * ratio + b + offset}px`;
     }
-} // Убрана лишняя скобка, которая ломала скрипт ниже!
+}
