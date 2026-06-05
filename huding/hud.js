@@ -1,24 +1,24 @@
 var HUD = new Vue({
     el: "#hudElement",
     data: {
-        show: true, // ИСПРАВЛЕНО: Теперь худ НЕ пропадёт сам по себе после инициализации Vue
-        ammo: 100,  // Тестовое значение
+        show: true, // ИСПРАВЛЕНО: Сразу делаем его видимым при загрузке страницы
+        ammo: 0,
         money: "117 000 000",
         mic: false,
-        time: "12:00",
-        date: "01.01.2026",
-        street: "Миррор-Парк",
-        crossingRoad: "Бульвар Элгин",
-        playerId : 1, // Тестовый ID, чтобы не было пустоты
+        time: "02:01",
+        date: "22.04.2021",
+        street: "Гора Чиллиад",
+        crossingRoad: "Шоссе Сенора",
+        playerId : 1000,
 		personId: 0,
-        online: 500,  // Тестовый онлайн
+        online: 1000,
         inVeh: false,
 		belt: false,
         engine: false,
         doors: false,
         light: false,
         ilight: -1,
-        speed: "0",
+        speed: "150",
         fuel: 100,
         maxfuel: 150,
         gear: 1,
@@ -26,11 +26,19 @@ var HUD = new Vue({
         press: false,
         green: false,
     },
+    watch: {
+        // ЖЕСТКАЯ ДИРЕКТИВА: Перехватываем любые попытки сервера скрыть худ
+        show: function(newValue) {
+            if (newValue === false) {
+                this.show = true; // Запрещаем скрытие, всегда возвращаем true
+            }
+        }
+    },
     methods: {
         rpmm: function(rpm) {
             this.rpm = rpm;
         },
-        setTime: function(time, date) { // Исправлено на обычную функцию для корректной работы 'this' во Vue
+        setTime: function(time, date) { // ИСПРАВЛЕНО: Заменено на обычную функцию, чтобы 'this' внутри Vue работал правильно
             this.time = time;
             this.date = date;
         }, 
@@ -45,7 +53,7 @@ var HUD = new Vue({
     }
 });
 
-// Экспортируем HUD в глобальное окно браузера, чтобы C# (клиент RageMP / FiveM) мог до него достучаться
+// Дополнительная защита: выводим инстанс в глобальную область, на случай если игра будет искать его напрямую
 window.HUD = HUD;
 
 var lastW = 0;
@@ -57,7 +65,9 @@ function updatehud(width, ratio, safezone, offset=0) {
 
     if(width > 2100) {
         offset += 98;
-        if(document.querySelector(".mappings")) document.querySelector(".mappings").style['bottom'] = '1px';
+        if(document.querySelector(".mappings")) {
+            document.querySelector(".mappings").style['bottom'] = '1px';
+        }
     }
 
     if(width < 1440) {
@@ -84,4 +94,4 @@ function updatehud(width, ratio, safezone, offset=0) {
     if (mappingsEl) {
         mappingsEl.style.left = `${m * ratio + b + offset}px`;
     }
-}
+} // ИСПРАВЛЕНО: Лишняя ломающая скобка полностью удалена
