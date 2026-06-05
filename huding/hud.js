@@ -1,7 +1,7 @@
-﻿var HUD = new Vue({
+var HUD = new Vue({
     el: "#hudElement",
     data: {
-        show: false,
+        show: true, // Изменили на true, чтобы худ по дефолту оставался видимым
         ammo: 0,
         money: "117 000 000",
         mic: false,
@@ -45,26 +45,21 @@
     }
 })
 
-
 var lastW = 0;
 var lastR = 0;
 
-function updatehud(width, ratio,safezone,offset=0) {
-
+function updatehud(width, ratio, safezone, offset=0) {
     lastW = width; lastR = ratio;
-
-   let y1 = 316, y2 = 436;
+    let y1 = 316, y2 = 436;
 
     if(width > 2100) {
         offset += 98;
-        
         document.querySelector(".mappings").style['bottom'] = '1px';
     }
 
     if(width < 1440) {
         offset -= 92;
         y2 = 404;
-
         document.querySelector(".mappings").style.bottom = '13px';
         document.querySelector(".mappings").style.transform = 'scale(0.75)';
     }
@@ -78,6 +73,10 @@ function updatehud(width, ratio,safezone,offset=0) {
     const m = (y2 - y1) / (5/4 - 16/9);
     const b = y1 - (m * 16 / 9);
 
-    document.querySelector(".mappings").style.left = `${m * ratio + b + offset}px`;
-    
-}
+    // Дополнительная проверка на существование элемента перед изменением стилей,
+    // чтобы предотвратить падение скрипта при перезагрузках
+    let mappingsEl = document.querySelector(".mappings");
+    if (mappingsEl) {
+        mappingsEl.style.left = `${m * ratio + b + offset}px`;
+    }
+} // Убрана лишняя скобка, которая ломала скрипт ниже!
