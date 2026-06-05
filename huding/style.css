@@ -1323,3 +1323,18 @@ textarea.menu-input::-webkit-scrollbar {
 .yk-color-gray {
     color: #7A92B6;
 }
+/* Жестко принуждаем элемент худа и все его внутренности быть видимыми, 
+что бы ни происходило в JS/Vue */
+#hudElement, 
+.hud-main-container, 
+[v-cloak] {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+/* Если элементы внутри худа используют анимацию скрытия, 
+мы её отключаем для теста */
+#hudElement *, .content-block * {
+    animation: none !important;
+    transition: none !important;
+}
