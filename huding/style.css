@@ -1,7 +1,6 @@
 body {
-	background-image: url('https://i.redd.it/d6r7xhn81aa91.png');
-	background-repeat: no-repeat;
-	 background-size: cover;
+    background: transparent;
+    user-select: none;
 }
 
 :root {
